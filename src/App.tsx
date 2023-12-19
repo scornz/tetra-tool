@@ -1,5 +1,5 @@
 import "./App.css";
-import BoardContainer from "components/BoardContainer";
+import { BoardContainer } from "components";
 
 function App() {
   return (
