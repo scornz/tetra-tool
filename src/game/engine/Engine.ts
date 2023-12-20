@@ -11,10 +11,7 @@ class Engine implements Entity {
     this.renderer = new Renderer(this);
   }
 
-  update(delta: number): void {
-    // Print the current time for debugging purposes
-    console.log(this.renderer.time);
-  }
+  update(delta: number): void {}
 
   destroy(): void {
     // Destroy all children of this engine

@@ -29,13 +29,15 @@ class Renderer {
     this.time = 0;
     this.deltaTime = 0;
     this.lastTime = 0;
+    // Bind the step function to this context
+    this.step = this.step.bind(this);
     // Request the initial frame
-    this.frameHandle = window.requestAnimationFrame(() => this.step());
+    this.frameHandle = window.requestAnimationFrame(this.step);
   }
 
   step(): void {
     // Grab the current time and convert from milliseconds to seconds
-    this.time = performance.now() * 1000;
+    this.time = performance.now() / 1000;
     // Calculate time since last frame
     this.deltaTime = this.time - this.lastTime;
     this.lastTime = this.time;
