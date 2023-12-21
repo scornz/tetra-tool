@@ -4,7 +4,7 @@
  */
 interface Entity {
   update(delta: number): void;
-  destroy?(): void;
+  destroy(): void;
 }
 
 export default Entity;
