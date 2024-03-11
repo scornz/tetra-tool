@@ -1,6 +1,6 @@
-import { getCoords } from "utils";
-import { BOARD_COLORS, TESTING_LAYOUT } from "game/constants";
-import { CanvasEntity } from "game/engine";
+import { getCoords } from "@/utils";
+import { BOARD_COLORS, TESTING_LAYOUT } from "@/game/constants";
+import { CanvasEntity } from "@/game/engine";
 
 class Board extends CanvasEntity {
   /**

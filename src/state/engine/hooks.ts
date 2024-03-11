@@ -1,7 +1,7 @@
 import { useContext } from "react";
 
 import { EngineContext } from ".";
-import { Engine } from "game/engine";
+import { Engine } from "@/game/engine";
 
 /**
  * Hook for retrieving the engine instance. Must be used within an EngineProvider.

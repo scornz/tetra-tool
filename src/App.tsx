@@ -1,6 +1,6 @@
 import "./App.css";
-import { EngineProvider } from "state/engine";
-import { BoardContainer } from "components";
+import { EngineProvider } from "@/state/engine";
+import { BoardContainer } from "@/components";
 
 function App() {
   return (

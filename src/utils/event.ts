@@ -1,5 +1,5 @@
-import { Entity } from "game/engine";
-import GameEntity from "game/engine/GameEntity";
+import { Entity } from "@/game/engine";
+import GameEntity from "@/game/engine/GameEntity";
 
 interface Listener<T> {
   (args: T): void;

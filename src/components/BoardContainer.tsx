@@ -1,5 +1,5 @@
 import { Box, PropsOf, styled } from "@chakra-ui/react";
-import { Board } from "game/objects";
+import { Board } from "@/game/objects";
 import React, { useRef, useEffect } from "react";
 
 const BoardContainer = ({ ...props }: PropsOf<typeof Box>) => {

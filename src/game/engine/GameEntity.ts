@@ -1,4 +1,4 @@
-import { TypedEvent } from "utils/event";
+import { TypedEvent } from "@/utils/event";
 import { Engine, Entity } from ".";
 
 /**

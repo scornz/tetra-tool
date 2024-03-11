@@ -1,4 +1,4 @@
-import { Engine } from "game/engine";
+import { Engine } from "@/game/engine";
 import React, { createContext, useState, useEffect } from "react";
 
 export const EngineContext = createContext<Engine | null>(null);
