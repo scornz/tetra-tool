@@ -1,9 +1,11 @@
 import { Box, PropsOf, styled } from "@chakra-ui/react";
 import { Board } from "@/game/objects";
 import React, { useRef, useEffect } from "react";
+import { useEngine } from "@/state/engine";
 
 const BoardContainer = ({ ...props }: PropsOf<typeof Box>) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const engine = useEngine();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -13,7 +15,7 @@ const BoardContainer = ({ ...props }: PropsOf<typeof Box>) => {
       const ctx = canvas.getContext("2d");
 
       if (ctx) {
-        const board = new Board(ctx, 10, 30, 20, true);
+        const board = new Board(engine, ctx, 10, 30, 20, true);
         // Example: Draw a red rectangle
         board.draw();
       }

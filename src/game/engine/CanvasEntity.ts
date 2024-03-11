@@ -1,16 +1,18 @@
-import { Entity } from ".";
+import { Engine } from ".";
+import GameEntity from "./GameEntity";
 
 /**
  * An entity that is attached to canvas context. It handles all drawing and mandates
  * a canvas context to be passed in.
  */
-abstract class CanvasEntity implements Entity {
+abstract class CanvasEntity extends GameEntity {
   /**
    * The canvas attached to this entity.
    */
   protected ctx: CanvasRenderingContext2D;
 
-  constructor(ctx: CanvasRenderingContext2D) {
+  constructor(engine: Engine, ctx: CanvasRenderingContext2D) {
+    super(engine);
     this.ctx = ctx;
   }
 

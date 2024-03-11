@@ -1,6 +1,6 @@
 import { getCoords } from "@/utils";
 import { BOARD_COLORS, TESTING_LAYOUT } from "@/game/constants";
-import { CanvasEntity } from "@/game/engine";
+import { CanvasEntity, Engine } from "@/game/engine";
 
 class Board extends CanvasEntity {
   /**
@@ -13,13 +13,14 @@ class Board extends CanvasEntity {
   private layout: number[][];
 
   constructor(
+    engine: Engine,
     ctx: CanvasRenderingContext2D,
     public readonly width: number = 10,
     public readonly height: number = 30,
     private readonly visibleHeight: number = 20,
     testing: boolean = false
   ) {
-    super(ctx);
+    super(engine, ctx);
     this.ctx = ctx;
     this.layout = !testing
       ? Array.from(Array(height), (_) => Array(width).fill(0))

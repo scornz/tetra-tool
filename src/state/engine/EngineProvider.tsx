@@ -8,17 +8,13 @@ type Props = {
 };
 
 const EngineProvider = ({ children }: Props) => {
-  const [engine, setEngine] = useState<Engine | null>(null);
+  const [engine] = useState<Engine>(new Engine());
   useEffect(() => {
-    // Create a new engine when the component mounts
-    const newEngine = new Engine();
-    setEngine(newEngine);
-
     return () => {
       // Destroy the new engine when the component unmounts
-      newEngine.destroy();
+      engine.destroy();
     };
-  }, []);
+  }, [engine]);
 
   return (
     <EngineContext.Provider value={engine}>{children}</EngineContext.Provider>
