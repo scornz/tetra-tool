@@ -1,20 +1,16 @@
 import { Box, PropsOf, styled } from "@chakra-ui/react";
 import { Board } from "@/game/objects";
-import React, { useRef, useEffect, useState, useImperativeHandle } from "react";
+import React, { useRef, useEffect } from "react";
 import { useEngine } from "@/state/engine";
-import { HandleObject } from "@/utils";
+import { HandleObject, useInstanceHandle } from "@/utils";
 
 const BoardContainer = (
   { ...props }: PropsOf<typeof Box>,
   ref: React.ForwardedRef<HandleObject<Board | null>>
 ) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [board, setBoard] = useState<Board | null>(null);
+  const [board, setBoard] = useInstanceHandle<Board>(ref);
   const engine = useEngine();
-
-  useImperativeHandle(ref, () => ({
-    grab: () => board,
-  }));
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -30,7 +26,7 @@ const BoardContainer = (
     }
 
     return () => {};
-  }, [engine]);
+  }, [engine, setBoard]);
 
   return (
     <Box {...props}>

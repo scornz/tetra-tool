@@ -1,6 +1,7 @@
 import { getCoords } from "@/utils";
-import { BOARD_COLORS, TESTING_LAYOUT } from "@/game/constants";
-import { CanvasEntity, Engine } from "@/game/engine";
+import { BOARD_COLORS, TESTING_LAYOUT, TetrominoType } from "@/game/constants";
+import { CanvasEntity, Engine, Vector2 } from "@/game/engine";
+import Tetromino from "./Tetromino";
 
 class Board extends CanvasEntity {
   /**
@@ -11,6 +12,11 @@ class Board extends CanvasEntity {
    * 6 - S (green), 7 - Z (red)
    */
   private layout: number[][];
+
+  /**
+   * The cells occupied by the piece that is currently being controlled.
+   */
+  private movingCells: Vector2[] | null = null;
 
   constructor(
     engine: Engine,
@@ -39,16 +45,63 @@ class Board extends CanvasEntity {
       for (let x = 0; x < this.width; x++) {
         const cell = this.layout[y][x];
         if (cell) {
-          this.ctx.fillStyle = BOARD_COLORS[cell];
-          const coords = getCoords(this.ctx.canvas, x * cellSize, y * cellSize);
-          // Draw with negative cell y-size because the y-axis is inverted
-          this.ctx.fillRect(coords.x, coords.y, cellSize, -cellSize);
+          this.drawCell(x, y, cell);
         }
       }
     }
   }
 
-  // Add methods to manipulate the context here
+  /**
+   * Draw a cell on the board
+   * @param x The x position of the cell
+   * @param y The y position of the cell
+   * @param type The type of tetromino to draw
+   * @param clear Whether to clear the cell
+   */
+  private drawCell = (
+    x: number,
+    y: number,
+    type: TetrominoType,
+    clear: boolean = false
+  ) => {
+    const cellSize = this.ctx.canvas.width / this.width;
+    const coords = getCoords(this.ctx.canvas, x * cellSize, y * cellSize);
+    if (!clear) {
+      this.ctx.fillStyle = BOARD_COLORS[type];
+      // Draw with negative cell y-size because the y-axis is inverted
+      this.ctx.fillRect(coords.x, coords.y, cellSize, -cellSize);
+    } else {
+      this.ctx.clearRect(coords.x, coords.y, cellSize, -cellSize);
+    }
+  };
+
+  /**
+   * Draw/clear the cells that a tetromino occupies
+   * @param tetromino The tetromino to draw
+   * @param clear Whether to clear the tetromino
+   */
+  private drawTetromino = (tetromino: Tetromino, clear: boolean = false) => {
+    const positions = tetromino.getBoardPositions();
+    positions.forEach((pos) => {
+      this.drawCell(pos.x, pos.y, tetromino.type, clear);
+    });
+  };
+
+  /**
+   * Add a tetromino to the board
+   * @param tetromino The tetromino to add
+   */
+  updateTetromino(tetromino: Tetromino) {
+    if (this.movingCells) {
+      // Clear out all previous moving cells
+      for (const pos of this.movingCells) {
+        this.drawCell(pos.x, pos.y, 8, true);
+      }
+    }
+
+    // Draw the current position of this cell
+    this.drawTetromino(tetromino);
+  }
 }
 
 export default Board;
