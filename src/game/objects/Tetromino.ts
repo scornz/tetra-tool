@@ -2,6 +2,7 @@ import { Engine, GameEntity, InputType, Vector2 } from "@/game/engine";
 import {
   I_WALL_KICKS,
   JLTSZ_WALL_KICKS,
+  MOVEMENT,
   TETROMINO_SHAPES,
   TetrominoType,
 } from "@/game/constants";
@@ -18,13 +19,29 @@ class Tetromino extends GameEntity {
   */
   private rot: number = 0;
 
+  private dropTime: number = 0;
+  private softDropTime: number = 0;
+
+  private lockDownTime: number = 0;
+  private arrTime: number = MOVEMENT.ARR;
+
+  // Move counters used for lock down timer
+  private moveCounter: number = 0;
+  private prevMoveCounter: number = 0;
+
+  private _placed: boolean = false;
+  get placed(): boolean {
+    return this._placed;
+  }
+
   // Callback for handling movement, store this for later removal
   private handleInputCallback: (input: InputType) => void;
 
   constructor(
     engine: Engine,
     private readonly board: Board,
-    public readonly type: TetrominoType
+    public readonly type: TetrominoType,
+    private readonly dropInterval: number
   ) {
     super(engine);
     this.pos = this.board.spawnPos;
@@ -33,7 +50,79 @@ class Tetromino extends GameEntity {
     this.engine.input.addListener(this.handleInputCallback);
   }
 
-  update(_delta: number): void {}
+  update(delta: number): void {
+    this.dropTime += delta;
+
+    const [keyHeld, keyHeldTime] = this.engine.input.getHeldKey();
+
+    // Handle falling of tetromino, use soft drop speed if soft drop key is held
+    if (this.dropTime > this.dropInterval) {
+      // Keep moving down one block until the time is made up
+      while (this.dropTime > this.dropInterval) {
+        this.dropTime -= this.dropInterval;
+        this.move(0, -1);
+      }
+    }
+    // Only allow soft dropping when game speed is slower than soft drop seed
+    else if (
+      this.dropInterval > MOVEMENT.SD &&
+      keyHeld == InputType.SOFT_DROP
+    ) {
+      this.dropTime = 0;
+      this.softDropTime += delta;
+      let moved = true;
+      // Drop multiple rows if necessary
+      while (this.softDropTime > MOVEMENT.SD && moved) {
+        this.softDropTime -= MOVEMENT.SD;
+        moved = this.move(0, -1);
+      }
+    }
+
+    // Reset soft drop time when key is released
+    if (keyHeld != InputType.SOFT_DROP) {
+      this.softDropTime = 0;
+    }
+
+    // If the held key is movement to the right or left
+    if (
+      (keyHeld == InputType.MOVE_LEFT || keyHeld == InputType.MOVE_RIGHT) &&
+      keyHeldTime > MOVEMENT.DAS
+    ) {
+      let moved = true;
+      // Move the tetromino by 1 unit (could be multiple frames)
+      // Stop if ARR time stops, or moved is false
+      while (this.arrTime > MOVEMENT.ARR && moved) {
+        this.arrTime -= MOVEMENT.ARR;
+        moved = this.move(keyHeld == InputType.MOVE_LEFT ? -1 : 1, 0);
+      }
+      this.arrTime += delta;
+    } else {
+      this.arrTime = 0;
+    }
+
+    if (this.checkLockDown()) {
+      // Reset the counter if the tetromino has been moved and is less than max moves
+      if (
+        this.moveCounter != this.prevMoveCounter &&
+        this.moveCounter <= MOVEMENT.MAX_MOVE_LOCK_DOWN
+      ) {
+        this.prevMoveCounter = this.moveCounter;
+        this.lockDownTime = 0;
+      }
+
+      this.lockDownTime += delta;
+      if (this.lockDownTime > 0.5) {
+        // Lock down the tetromino
+        this.place();
+        // Return early, no need to update the cell positions
+        return;
+      }
+    } else {
+      // Reset move counters
+      this.moveCounter = 0;
+      this.prevMoveCounter = 0;
+    }
+  }
 
   /**
    * Handles input and specialized audio for input feedback
@@ -81,6 +170,7 @@ class Tetromino extends GameEntity {
 
     // Set the new position
     this.pos = newPos;
+    this.moveCounter++;
     return true;
   }
 
@@ -111,6 +201,7 @@ class Tetromino extends GameEntity {
       // No collision!
       this.rot = rot;
       this.pos = newPos;
+      this.moveCounter++;
       return true;
     }
 
@@ -143,6 +234,22 @@ class Tetromino extends GameEntity {
   }
 
   /**
+   * Check if the board has blocks immediatley below any of these cells. If so,
+   * this should engage a lock down of the tetromino.
+   */
+  checkLockDown(): boolean {
+    const positions = this.getBoardPositions(this.pos, this.rot);
+    for (const pos of positions) {
+      // Check to see if the position BELOW this cell is filled
+      if (this.board.isFilled(pos.x, pos.y - 1)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * Based on the position of this tetromino, get the board positions that are
    * occupied by cells.
    * @returns The board positions that this tetromino occupies
@@ -167,7 +274,24 @@ class Tetromino extends GameEntity {
    * Shift the tetromino down by 1 unit until there is a collision, then place the
    * tetromino on the board.
    */
-  place(): void {}
+  place(): void {
+    // Keep moving until the piece stops
+    let dropped = 0;
+    while (this.move(0, -1)) {
+      dropped++;
+    }
+
+    // Place the tetromino on the board
+    this.board.place(this);
+    // Note that this piece has been placed
+    this._placed = true;
+  }
+
+  destroy(): void {
+    super.destroy();
+    // Remove event listeners
+    this.engine.input.removeListener(this.handleInputCallback);
+  }
 }
 
 export default Tetromino;

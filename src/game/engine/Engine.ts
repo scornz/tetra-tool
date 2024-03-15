@@ -41,6 +41,7 @@ class Engine implements Entity {
    * Remove an entity from the engine.
    */
   removeEntity(entity: Entity): boolean {
+    console.log("Removing entity ", entity);
     // Remove the entity from the list of entities
     return this.entities.delete(entity);
   }

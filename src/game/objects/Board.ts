@@ -95,6 +95,16 @@ class Board extends CanvasEntity {
 
     return this.layout[y][x] != 0;
   }
+
+  place(tetromino: Tetromino): void {
+    const positions = tetromino.getBoardPositions();
+    for (let i = 0; i < positions.length; i++) {
+      const pos = positions[i];
+      this.layout[pos.y][pos.x] = tetromino.type;
+    }
+    // Remove this tetromino from the scene
+    tetromino.destroy();
+  }
 }
 
 export default Board;

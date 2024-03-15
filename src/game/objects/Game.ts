@@ -3,6 +3,8 @@ import { Board, Tetromino } from ".";
 import { TetrominoType } from "../constants";
 
 class Game extends GameEntity {
+  speed: number = 1;
+
   // Callback for handling movement, store this for later removal
   private handleInputCallback: (input: InputType) => void;
 
@@ -20,10 +22,12 @@ class Game extends GameEntity {
     // Go through available input and handle accordingly
     switch (input) {
       case InputType.QUICK_RESET:
+        console.log("spawning tetromino");
         this.board.tetromino = new Tetromino(
           this.engine,
           this.board,
-          TetrominoType.J
+          TetrominoType.J,
+          this.speed
         );
         break;
     }
