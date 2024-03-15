@@ -14,9 +14,14 @@ class Board extends CanvasEntity {
   private layout: number[][];
 
   /**
-   * The cells occupied by the piece that is currently being controlled.
+   * The current falling tetromino, if there is one.
    */
-  private movingCells: Vector2[] | null = null;
+  public tetromino: Tetromino | null = null;
+
+  /**
+   * Spawn position of the tetromino
+   */
+  public spawnPos: Vector2 = new Vector2(3, 18);
 
   constructor(
     engine: Engine,
@@ -32,15 +37,14 @@ class Board extends CanvasEntity {
       ? Array.from(Array(height), (_) => Array(width).fill(0))
       : TESTING_LAYOUT;
   }
-  update(_delta: number): void {}
+
+  update(_delta: number): void {
+    this.draw();
+  }
 
   draw() {
     // Clear board prior to every draw
     this.clear();
-
-    // Number of pixels per cell, assume that they are square
-    const cellSize = this.ctx.canvas.width / this.width;
-
     for (let y = 0; y < this.visibleHeight; y++) {
       for (let x = 0; x < this.width; x++) {
         const cell = this.layout[y][x];
@@ -48,6 +52,11 @@ class Board extends CanvasEntity {
           this.drawCell(x, y, cell);
         }
       }
+    }
+
+    // Draw the active tetromino if it exists
+    if (this.tetromino) {
+      this.drawTetromino(this.tetromino);
     }
   }
 
@@ -58,21 +67,12 @@ class Board extends CanvasEntity {
    * @param type The type of tetromino to draw
    * @param clear Whether to clear the cell
    */
-  private drawCell = (
-    x: number,
-    y: number,
-    type: TetrominoType,
-    clear: boolean = false
-  ) => {
+  private drawCell = (x: number, y: number, type: TetrominoType) => {
     const cellSize = this.ctx.canvas.width / this.width;
     const coords = getCoords(this.ctx.canvas, x * cellSize, y * cellSize);
-    if (!clear) {
-      this.ctx.fillStyle = BOARD_COLORS[type];
-      // Draw with negative cell y-size because the y-axis is inverted
-      this.ctx.fillRect(coords.x, coords.y, cellSize, -cellSize);
-    } else {
-      this.ctx.clearRect(coords.x, coords.y, cellSize, -cellSize);
-    }
+    this.ctx.fillStyle = BOARD_COLORS[type];
+    // Draw with negative cell y-size because the y-axis is inverted
+    this.ctx.fillRect(coords.x, coords.y, cellSize, -cellSize);
   };
 
   /**
@@ -80,27 +80,20 @@ class Board extends CanvasEntity {
    * @param tetromino The tetromino to draw
    * @param clear Whether to clear the tetromino
    */
-  private drawTetromino = (tetromino: Tetromino, clear: boolean = false) => {
+  private drawTetromino = (tetromino: Tetromino) => {
     const positions = tetromino.getBoardPositions();
     positions.forEach((pos) => {
-      this.drawCell(pos.x, pos.y, tetromino.type, clear);
+      this.drawCell(pos.x, pos.y, tetromino.type);
     });
   };
 
   /**
-   * Add a tetromino to the board
-   * @param tetromino The tetromino to add
+   * Returns true if the given position has a cell (a non-zero value in it).
    */
-  updateTetromino(tetromino: Tetromino) {
-    if (this.movingCells) {
-      // Clear out all previous moving cells
-      for (const pos of this.movingCells) {
-        this.drawCell(pos.x, pos.y, 8, true);
-      }
-    }
+  isFilled(x: number, y: number): boolean {
+    if (x < 0 || x >= this.width || y < 0) return true;
 
-    // Draw the current position of this cell
-    this.drawTetromino(tetromino);
+    return this.layout[y][x] != 0;
   }
 }
 

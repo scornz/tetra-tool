@@ -1,10 +1,15 @@
-import { Entity, Renderer } from ".";
+import { Entity, Input, Renderer } from ".";
 
 class Engine implements Entity {
   /**
    * The renderer for the engine, and maintains the game loop.
    */
   renderer: Renderer;
+
+  /**
+   * The input manager for the engine.
+   */
+  input: Input;
 
   /**
    * A list of entities that are attached to this engine.
@@ -14,11 +19,14 @@ class Engine implements Entity {
   constructor() {
     // Create the game loop
     this.renderer = new Renderer(this);
+    this.input = new Input(this);
   }
 
   update(delta: number): void {
     // Update each entity
     this.entities.forEach((e) => e.update(delta));
+    // Update the input manager
+    this.input.update(delta);
   }
 
   /**

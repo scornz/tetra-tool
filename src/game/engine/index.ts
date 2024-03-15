@@ -8,3 +8,5 @@ export { default as GameEntity } from "./GameEntity";
 export { default as Engine } from "./Engine";
 export { default as Renderer } from "./Renderer";
 export { default as Vector2 } from "./Vector2";
+
+export * from "./input";
