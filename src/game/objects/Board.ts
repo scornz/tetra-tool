@@ -16,7 +16,7 @@ class Board extends CanvasEntity {
   /**
    * The current falling tetromino, if there is one.
    */
-  public tetromino: Tetromino | null = null;
+  private tetromino: Tetromino | null = null;
 
   /**
    * Spawn position of the tetromino
@@ -96,6 +96,19 @@ class Board extends CanvasEntity {
     return this.layout[y][x] != 0;
   }
 
+  /**
+   * Update the active tetromino of the board, if it exists.
+   * @param tetromino The tetromino to set
+   */
+  setTetromino(tetromino: Tetromino): void {
+    if (this.tetromino) {
+      // Destroy the existing tetromino if it exists
+      this.tetromino.destroy();
+    }
+
+    this.tetromino = tetromino;
+  }
+
   place(tetromino: Tetromino): void {
     const positions = tetromino.getBoardPositions();
     for (let i = 0; i < positions.length; i++) {
@@ -104,6 +117,7 @@ class Board extends CanvasEntity {
     }
     // Remove this tetromino from the scene
     tetromino.destroy();
+    this.tetromino = null;
   }
 }
 

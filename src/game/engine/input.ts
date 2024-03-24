@@ -120,7 +120,8 @@ export class Input {
     if (input === undefined) return;
 
     // Call the listeners on this
-    for (const listener of this.listeners) {
+    // Duplicate the set to avoid modifying it while iterating
+    for (const listener of new Set(this.listeners)) {
       listener(input);
     }
 

@@ -7,6 +7,7 @@ import {
   TetrominoType,
 } from "@/game/constants";
 import { Board } from ".";
+import { TypedEvent } from "@/utils";
 
 class Tetromino extends GameEntity {
   private pos: Vector2 = new Vector2(0, 0);
@@ -29,13 +30,13 @@ class Tetromino extends GameEntity {
   private moveCounter: number = 0;
   private prevMoveCounter: number = 0;
 
-  private _placed: boolean = false;
-  get placed(): boolean {
-    return this._placed;
-  }
-
   // Callback for handling movement, store this for later removal
   private handleInputCallback: (input: InputType) => void;
+
+  /**
+   * Event that is emitted when this tetromino is placed on the board.
+   */
+  public readonly placed: TypedEvent<void> = new TypedEvent();
 
   constructor(
     engine: Engine,
@@ -45,6 +46,10 @@ class Tetromino extends GameEntity {
   ) {
     super(engine);
     this.pos = this.board.spawnPos;
+    // Spawn an I tetromino one block lower
+    if (this.type == TetrominoType.I) {
+      this.pos = this.pos.add(new Vector2(0, -1));
+    }
 
     this.handleInputCallback = this.handleInput.bind(this);
     this.engine.input.addListener(this.handleInputCallback);
@@ -149,6 +154,7 @@ class Tetromino extends GameEntity {
         this.rotate((this.rot + 1) % 4);
         break;
       case InputType.HARD_DROP:
+        console.trace();
         this.place();
         break;
     }
@@ -283,8 +289,9 @@ class Tetromino extends GameEntity {
 
     // Place the tetromino on the board
     this.board.place(this);
-    // Note that this piece has been placed
-    this._placed = true;
+    // Emit the placed event
+    this.placed.emit();
+    this.placed.clear();
   }
 
   destroy(): void {
