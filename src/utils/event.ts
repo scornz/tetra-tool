@@ -40,7 +40,7 @@ export class TypedEvent<T = void> {
 
   /**
    * Stop listening to this event. Entity is optional, and if provided, will
-   * remove this listener from the entity's listeners. However, entities
+   * remove this listener from the entity's listeners.
    */
   off(listener: Listener<T>, entity?: GameEntity) {
     this.listeners.delete(listener);
@@ -84,6 +84,15 @@ export class TypedEvent<T = void> {
     if (this.entities.get(entity)!.size === 0) {
       this.entities.delete(entity);
     }
+  }
+
+  /**
+   * Clear all listeners from this event.
+   */
+  public clear() {
+    this.listeners.clear();
+    this.onceListeners.clear();
+    this.entities.clear();
   }
 
   /**
