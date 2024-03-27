@@ -154,7 +154,6 @@ class Tetromino extends GameEntity {
         this.rotate((this.rot + 1) % 4);
         break;
       case InputType.HARD_DROP:
-        console.trace();
         this.place();
         break;
     }
