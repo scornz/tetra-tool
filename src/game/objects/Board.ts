@@ -67,10 +67,18 @@ class Board extends CanvasEntity {
    * @param type The type of tetromino to draw
    * @param clear Whether to clear the cell
    */
-  private drawCell = (x: number, y: number, type: TetrominoType) => {
+  private drawCell = (
+    x: number,
+    y: number,
+    type: TetrominoType,
+    ghost: boolean = false
+  ) => {
     const cellSize = this.ctx.canvas.width / this.width;
     const coords = getCoords(this.ctx.canvas, x * cellSize, y * cellSize);
     this.ctx.fillStyle = BOARD_COLORS[type];
+
+    if (ghost) this.ctx.fillStyle += "4d"; // add transparency to the color
+
     // Draw with negative cell y-size because the y-axis is inverted
     this.ctx.fillRect(coords.x, coords.y, cellSize, -cellSize);
   };
@@ -84,6 +92,11 @@ class Board extends CanvasEntity {
     const positions = tetromino.getBoardPositions();
     positions.forEach((pos) => {
       this.drawCell(pos.x, pos.y, tetromino.type);
+    });
+
+    const ghostPositions = tetromino.getGhostPositions();
+    ghostPositions.forEach((pos) => {
+      this.drawCell(pos.x, pos.y, tetromino.type, true);
     });
   };
 

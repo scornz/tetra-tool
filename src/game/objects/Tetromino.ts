@@ -277,6 +277,20 @@ class Tetromino extends GameEntity {
   }
 
   /**
+   * Based on the position of this tetromino, get the board positions that this
+   * tetromino would occupy if it were hard dropped.
+   * @returns The board positions that this tetromino occupies
+   */
+  getGhostPositions(): Vector2[] {
+    let ghostPos = new Vector2(this.pos.x, this.pos.y);
+    while (!this.checkCollision(ghostPos.add(new Vector2(0, -1)), this.rot)) {
+      // Move ghost position down until there is a collision
+      ghostPos = ghostPos.add(new Vector2(0, -1));
+    }
+    return this.getBoardPositions(ghostPos, this.rot);
+  }
+
+  /**
    * Shift the tetromino down by 1 unit until there is a collision, then place the
    * tetromino on the board.
    */
