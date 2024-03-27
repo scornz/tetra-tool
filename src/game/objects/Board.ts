@@ -82,6 +82,13 @@ class Board {
 
     return cleared;
   }
+
+  /**
+   * Get clone of layout.
+   */
+  getLayout(): number[][] {
+    return this.layout.map((row) => [...row]);
+  }
 }
 
 export default Board;

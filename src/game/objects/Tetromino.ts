@@ -20,9 +20,12 @@ class Tetromino {
 
   constructor(
     private readonly board: Board,
-    public readonly type: TetrominoType
+    public readonly type: TetrominoType,
+    pos: Vector2 = new Vector2(0, 0),
+    rot: number = 0
   ) {
-    this.pos = this.board.spawnPos;
+    this.pos = pos;
+    this.rot = rot;
     // Spawn an I tetromino one block lower
     if (this.type == TetrominoType.I) {
       this.pos = this.pos.add(new Vector2(0, -1));

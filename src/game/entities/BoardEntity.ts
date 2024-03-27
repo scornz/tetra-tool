@@ -63,7 +63,7 @@ class BoardEntity extends CanvasEntity {
   }
 
   createTetromino(type: TetrominoType): Tetromino {
-    return new Tetromino(this.board, type);
+    return new Tetromino(this.board, type, this.spawnPos);
   }
 
   /**
