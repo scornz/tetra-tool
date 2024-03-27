@@ -1,16 +1,9 @@
 import { Engine, GameEntity, InputType } from "@/game/engine";
-import { Board, Hold, Tetromino } from ".";
+import { Board, Hold, NextQueue, Tetromino } from ".";
 import { TetrominoType } from "../constants";
-import { shuffle } from "@/utils";
 
 class Game extends GameEntity {
   speed: number = 1;
-
-  private nextPieces: TetrominoType[] = [];
-  private bag: TetrominoType[] = [];
-
-  private numPreview: number = 5;
-
   /*
    * Whether the hold has already been used this turn
    */
@@ -22,17 +15,12 @@ class Game extends GameEntity {
   constructor(
     engine: Engine,
     private readonly board: Board,
-    private readonly hold: Hold
+    private readonly hold: Hold,
+    private readonly next: NextQueue
   ) {
     super(engine);
     this.handleInputCallback = this.handleInput.bind(this);
     this.engine.input.addListener(this.handleInputCallback);
-
-    for (let i = 0; i < this.numPreview; i++) {
-      const piece = this.grab();
-      // this.preview.shiftAdd(piece);
-      this.nextPieces.push(piece);
-    }
 
     // Start the game
     // NOTE: This should be removed for another start method of some sort
@@ -68,51 +56,10 @@ class Game extends GameEntity {
   }
 
   /**
-   * Randomly initalize the bag of tetriminos and filter out the debug value (8)
-   */
-  fillBag() {
-    this.bag = shuffle([
-      TetrominoType.I,
-      TetrominoType.O,
-      TetrominoType.T,
-      TetrominoType.J,
-      TetrominoType.L,
-      TetrominoType.S,
-      TetrominoType.Z,
-    ]);
-  }
-
-  /**
-   * Grab the next piece from the bag, and do not replace it until the bag is
-   * completely empty.
-   * @returns The next tetromino in the bag
-   */
-  grab(): TetrominoType {
-    // Fill bag if the bag is empty
-    if (this.bag.length == 0) {
-      this.fillBag();
-    }
-    return this.bag.pop()!;
-  }
-
-  /**
-   * Used to get the next piece, usually for spawning in.
-   * @returns The next piece to spawn in the preview selection
-   */
-  getNextPiece(): TetrominoType {
-    const nextPiece = this.nextPieces.shift()!;
-
-    const newPiece = this.grab();
-    this.nextPieces.push(newPiece);
-    // this.preview.shiftAdd(newPiece);
-    return nextPiece;
-  }
-
-  /**
    * Spawns the next piece in the sequence into the game
    */
   spawnNext() {
-    const piece = this.getNextPiece();
+    const piece = this.next.getNextPiece();
     this.spawn(piece);
   }
 
