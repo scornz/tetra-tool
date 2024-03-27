@@ -10,5 +10,7 @@ export const getPossibleBoards = (
   board: number[][],
   tetromino: number
 ): number[][][] => {
+  const stack = [];
+
   return [];
 };

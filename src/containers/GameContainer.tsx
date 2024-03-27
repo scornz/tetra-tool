@@ -8,12 +8,13 @@ import {
   useNonnullInstanceRef,
 } from "@/utils";
 import { BoardContainer, HoldContainer, NextQueueContainer } from ".";
+import { BoardEntity } from "@/game/entities";
 
 const GameContainer = (
   { ...props }: PropsOf<typeof Box>,
   ref: React.ForwardedRef<HandleObject<Game | null>>
 ) => {
-  const [boardRef, board] = useNonnullInstanceRef<Board>();
+  const [boardRef, board] = useNonnullInstanceRef<BoardEntity>();
   const [holdRef, hold] = useNonnullInstanceRef<Hold>();
   const [nextRef, next] = useNonnullInstanceRef<NextQueue>();
   const [game, setGame] = useInstanceHandle(ref);

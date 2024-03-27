@@ -1,4 +1,5 @@
 import { Engine, GameEntity, InputType } from "@/game/engine";
+import { BoardEntity, TetrominoEntity } from "@/game/entities";
 import { Board, Hold, NextQueue, Tetromino } from ".";
 import { TetrominoType } from "../constants";
 
@@ -14,7 +15,7 @@ class Game extends GameEntity {
 
   constructor(
     engine: Engine,
-    private readonly board: Board,
+    private readonly board: BoardEntity,
     private readonly hold: Hold,
     private readonly next: NextQueue
   ) {
@@ -68,7 +69,12 @@ class Game extends GameEntity {
    * @param type The tetromino to spawn
    */
   spawn(type: TetrominoType) {
-    const tetromino = new Tetromino(this.engine, this.board, type, this.speed);
+    const tetromino = new TetrominoEntity(
+      this.engine,
+      this.board,
+      type,
+      this.speed
+    );
     // If this tetromino collides with the board, then the game is over
     if (tetromino.checkCollision()) {
       // Immediatley destroy the tetromino
