@@ -16,7 +16,10 @@ class Board extends CanvasEntity {
   /**
    * The current falling tetromino, if there is one.
    */
-  private tetromino: Tetromino | null = null;
+  private _tetromino: Tetromino | null = null;
+  get tetromino(): Tetromino | null {
+    return this._tetromino;
+  }
 
   /**
    * Spawn position of the tetromino
@@ -119,7 +122,7 @@ class Board extends CanvasEntity {
       this.tetromino.destroy();
     }
 
-    this.tetromino = tetromino;
+    this._tetromino = tetromino;
   }
 
   place(tetromino: Tetromino): void {
@@ -134,7 +137,7 @@ class Board extends CanvasEntity {
     // Check cleared lines
     const cleared = this.checkLines();
 
-    this.tetromino = null;
+    this._tetromino = null;
   }
 
   /**

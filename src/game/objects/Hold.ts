@@ -10,7 +10,10 @@ class Hold extends CanvasEntity {
   /**
    * The current held piece, if there is one.
    */
-  private piece: TetrominoType | null = null;
+  private _piece: TetrominoType | null = null;
+  get piece(): TetrominoType | null {
+    return this._piece;
+  }
 
   constructor(engine: Engine, ctx: CanvasRenderingContext2D) {
     super(engine, ctx);
@@ -20,7 +23,7 @@ class Hold extends CanvasEntity {
   update(_delta: number): void {}
 
   set(type: TetrominoType) {
-    this.piece = type;
+    this._piece = type;
     this.draw();
   }
 

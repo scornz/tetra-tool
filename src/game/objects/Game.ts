@@ -1,5 +1,5 @@
 import { Engine, GameEntity, InputType } from "@/game/engine";
-import { Board, Tetromino } from ".";
+import { Board, Hold, Tetromino } from ".";
 import { TetrominoType } from "../constants";
 import { shuffle } from "@/utils";
 
@@ -11,10 +11,19 @@ class Game extends GameEntity {
 
   private numPreview: number = 5;
 
+  /*
+   * Whether the hold has already been used this turn
+   */
+  private alreadyHeld: boolean = false;
+
   // Callback for handling movement, store this for later removal
   private handleInputCallback: (input: InputType) => void;
 
-  constructor(engine: Engine, private readonly board: Board) {
+  constructor(
+    engine: Engine,
+    private readonly board: Board,
+    private readonly hold: Hold
+  ) {
     super(engine);
     this.handleInputCallback = this.handleInput.bind(this);
     this.engine.input.addListener(this.handleInputCallback);
@@ -24,17 +33,37 @@ class Game extends GameEntity {
       // this.preview.shiftAdd(piece);
       this.nextPieces.push(piece);
     }
+
+    // Start the game
+    // NOTE: This should be removed for another start method of some sort
+    this.spawnNext();
   }
 
   /**
    * Handles input and specialized audio for input feedback
    */
   handleInput(input: InputType): void {
-    // Go through available input and handle accordingly
-    switch (input) {
-      case InputType.QUICK_RESET:
-        this.spawn();
-        break;
+    // Only allow a quick reset a second after the game has started
+    // if (input == InputType.QUICK_RESET && this.active && this.timer > 1) {
+    //   this.active = false;
+    //   // Quickly reload the scene, resetting the game
+    //   beginGame();
+    // }
+    if (input == InputType.HOLD && !this.alreadyHeld) {
+      if (this.hold.piece) {
+        // If there is already a held tetromino, then swap it with the current
+        const temp = this.hold.piece;
+        this.hold.set(this.board.tetromino!.type);
+        this.board.tetromino!.destroy();
+        this.spawn(temp);
+      } else {
+        // If there is no held tetromino, then simply hold the current one
+        this.hold.set(this.board.tetromino!.type);
+        this.board.tetromino?.destroy();
+        this.spawnNext();
+      }
+      // Prevent user from holding another piece until another one spawns
+      this.alreadyHeld = true;
     }
   }
 
@@ -79,9 +108,20 @@ class Game extends GameEntity {
     return nextPiece;
   }
 
-  spawn() {
+  /**
+   * Spawns the next piece in the sequence into the game
+   */
+  spawnNext() {
     const piece = this.getNextPiece();
-    const tetromino = new Tetromino(this.engine, this.board, piece, this.speed);
+    this.spawn(piece);
+  }
+
+  /**
+   * Spawns a tetromino into the game.
+   * @param type The tetromino to spawn
+   */
+  spawn(type: TetrominoType) {
+    const tetromino = new Tetromino(this.engine, this.board, type, this.speed);
     // If this tetromino collides with the board, then the game is over
     if (tetromino.checkCollision()) {
       // Immediatley destroy the tetromino
@@ -94,7 +134,10 @@ class Game extends GameEntity {
     // Spawn the next tetromino when this one is placed
     tetromino.placed.on(
       (() => {
-        this.spawn();
+        // When this is placed, spawn the next tetromino
+        this.spawnNext();
+        // Allow the user to hold another piece
+        this.alreadyHeld = false;
       }).bind(this),
       this
     );
