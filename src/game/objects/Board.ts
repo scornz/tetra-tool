@@ -23,7 +23,7 @@ class Board {
   ) {
     this.layout =
       initialLayout.length > 0
-        ? initialLayout
+        ? initialLayout.map((row) => [...row])
         : Array.from(Array(height), (_) => Array(width).fill(0));
   }
 
@@ -43,14 +43,24 @@ class Board {
     return this.layout[y][x];
   }
 
-  place(tetromino: Tetromino): void {
+  place(tetromino: Tetromino): boolean {
     const positions = tetromino.getBoardPositions();
+
+    // Check if it is valid
+    for (let i = 0; i < positions.length; i++) {
+      const pos = positions[i];
+      // Check if position is out of bounds or filled
+      if (this.isFilled(pos.x, pos.y)) return false;
+    }
+
+    // Place the tetromino
     for (let i = 0; i < positions.length; i++) {
       const pos = positions[i];
       this.layout[pos.y][pos.x] = tetromino.type;
     }
     // Check cleared lines
     const cleared = this.checkLines();
+    return true;
   }
 
   /**
@@ -88,6 +98,13 @@ class Board {
    */
   getLayout(): number[][] {
     return this.layout.map((row) => [...row]);
+  }
+
+  /**
+   * Get a deep clone of the board.
+   */
+  clone(): Board {
+    return new Board(this.width, this.height, this.layout);
   }
 }
 
