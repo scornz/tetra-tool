@@ -1,5 +1,5 @@
 import { Board, Tetromino } from "@/game/objects";
-import { TESTING_LAYOUT, TetrominoType } from "@/game/constants";
+import { TetrominoType } from "@/game/constants";
 import { Vector2 } from "../engine";
 import { LayoutSet, TetrominoStack, placeOnBoard } from ".";
 
@@ -46,7 +46,6 @@ export const getPossibleBoards = (
 
   // Keep going until the stack is empty, meaning all possibilities are explored
   while (stack.size() !== 0 && layouts.size() < PREDICTION_LIMIT) {
-    console.log(stack);
     const tetromino = stack.pop()!.clone();
     // if (tetromino.checkCollision()) continue;
 
@@ -84,4 +83,29 @@ export const getPossibleBoards = (
 
   // Return all layouts in the set
   return layouts.values();
+};
+
+/**
+ * Given a set of tetrominos, get the set of all possible board states that could
+ * occur from placing all tetrominos, in sequence.
+ * @param layout The current board layout.
+ * @param queue The queue of tetrominos to place.
+ * @returns A set of possible board states that could result from placing the tetrominos.
+ */
+export const getPossibleBoardsFromQueue = (
+  layout: number[][],
+  queue: TetrominoType[]
+): number[][][] => {
+  let layouts: number[][][] = [layout];
+  for (const tetrominoType of queue) {
+    const newLayouts = new LayoutSet();
+    // Go through each layout and get all possible boards
+    for (const layout of layouts) {
+      getPossibleBoards(layout, tetrominoType).forEach((layout) => {
+        newLayouts.add(layout);
+      });
+    }
+    layouts = newLayouts.values();
+  }
+  return layouts;
 };
