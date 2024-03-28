@@ -9,6 +9,9 @@ import { Board } from ".";
 
 class Tetromino {
   private pos: Vector2 = new Vector2(0, 0);
+  get position(): Vector2 {
+    return this.pos;
+  }
 
   /* The rotation of this tetromino
   0 - normal
@@ -17,6 +20,9 @@ class Tetromino {
   3 - 270 degrees
   */
   private rot: number = 0;
+  get rotation(): number {
+    return this.rot;
+  }
 
   constructor(
     private readonly board: Board,
@@ -28,7 +34,7 @@ class Tetromino {
     this.rot = rot;
     // Spawn an I tetromino one block lower
     if (this.type == TetrominoType.I) {
-      this.pos = this.pos.add(new Vector2(0, -1));
+      this.move(0, -1);
     }
   }
 
@@ -42,7 +48,6 @@ class Tetromino {
     const newPos = new Vector2(x, y).add(this.pos);
     // Check for a collision at the new position
     const collision = this.checkCollision(newPos, this.rot);
-
     // Do not move if there is a collision at the new position
     if (collision) return false;
 
@@ -176,6 +181,13 @@ class Tetromino {
 
     // Place the tetromino on the board
     this.board.place(this);
+  }
+
+  /**
+   * Get a clone of this tetromino.
+   */
+  clone(): Tetromino {
+    return new Tetromino(this.board, this.type, this.pos, this.rot);
   }
 }
 
