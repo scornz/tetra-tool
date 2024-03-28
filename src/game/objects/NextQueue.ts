@@ -113,6 +113,14 @@ class NextQueue extends CanvasEntity {
     // Draw with negative cell y-size because the y-axis is inverted
     this.ctx.fillRect(coords.x, coords.y, cellSize, -cellSize);
   };
+
+  /**
+   * @returns The next pieces in the queue
+   */
+  public getQueue() {
+    // Return the next pieces in the queue, copied
+    return this.nextPieces.slice();
+  }
 }
 
 export default NextQueue;

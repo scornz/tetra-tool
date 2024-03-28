@@ -1,6 +1,6 @@
 import { Engine, GameEntity, InputType } from "@/game/engine";
 import { BoardEntity, TetrominoEntity } from "@/game/entities";
-import { Board, Hold, NextQueue, Tetromino } from ".";
+import { Board, Hold, NextQueue, Tetromino } from "@/game/objects";
 import { TetrominoType } from "../constants";
 
 class Game extends GameEntity {
@@ -15,9 +15,9 @@ class Game extends GameEntity {
 
   constructor(
     engine: Engine,
-    private readonly board: BoardEntity,
-    private readonly hold: Hold,
-    private readonly next: NextQueue
+    protected readonly board: BoardEntity,
+    protected readonly hold: Hold,
+    protected readonly next: NextQueue
   ) {
     super(engine);
     this.handleInputCallback = this.handleInput.bind(this);
@@ -59,9 +59,10 @@ class Game extends GameEntity {
   /**
    * Spawns the next piece in the sequence into the game
    */
-  spawnNext() {
+  spawnNext(): TetrominoType {
     const piece = this.next.getNextPiece();
     this.spawn(piece);
+    return piece;
   }
 
   /**

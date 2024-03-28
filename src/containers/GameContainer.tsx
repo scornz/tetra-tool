@@ -1,5 +1,5 @@
 import { Box, HStack, PropsOf, styled } from "@chakra-ui/react";
-import { Board, Game, Hold, NextQueue } from "@/game/objects";
+import { Board, Hold, NextQueue } from "@/game/objects";
 import React, { useRef, useEffect, useState, useImperativeHandle } from "react";
 import { useEngine } from "@/state/engine";
 import {
@@ -8,22 +8,26 @@ import {
   useNonnullInstanceRef,
 } from "@/utils";
 import { BoardContainer, HoldContainer, NextQueueContainer } from ".";
-import { BoardEntity } from "@/game/entities";
+import {
+  BoardEntity,
+  Game,
+  PredictBoardEntity,
+  PredictGame,
+} from "@/game/entities";
 
 const GameContainer = (
   { ...props }: PropsOf<typeof Box>,
-  ref: React.ForwardedRef<HandleObject<Game | null>>
+  ref: React.ForwardedRef<HandleObject<PredictGame | null>>
 ) => {
-  const [boardRef, board] = useNonnullInstanceRef<BoardEntity>();
+  const [boardRef, board] = useNonnullInstanceRef<PredictBoardEntity>();
   const [holdRef, hold] = useNonnullInstanceRef<Hold>();
   const [nextRef, next] = useNonnullInstanceRef<NextQueue>();
   const [game, setGame] = useInstanceHandle(ref);
-  // const [game, setGame] = useState<Game>(null);
   const engine = useEngine();
 
   useEffect(() => {
     if (board && hold && next) {
-      const game = new Game(engine, board, hold, next);
+      const game = new PredictGame(engine, board, hold, next);
       setGame(game);
     }
   }, [board, engine, setGame, hold, next]);

@@ -1,15 +1,25 @@
 import { Board, Tetromino } from "../objects";
 
 /**
+ * A 2D layout of a board, where each cell is either filled or empty.
+ * The tetrominos are the moves used to arrive at this layout, from the
+ * starting board.
+ */
+export type PossibleLayout = {
+  board: number[][];
+  tetrominos: Tetromino[];
+};
+
+/**
  * A set of board layouts.
  */
 export class LayoutSet {
   private set: Set<string> = new Set<string>();
-  private layouts: number[][][] = [];
+  private layouts: PossibleLayout[] = [];
 
-  public add(layout: number[][]): void {
+  public add(layout: PossibleLayout): void {
     // Get the hash for this layout
-    const hash = hashLayout(layout);
+    const hash = hashLayout(layout.board);
     if (this.set.has(hash)) return;
 
     this.set.add(hash);
@@ -20,7 +30,7 @@ export class LayoutSet {
     return this.set.size;
   }
 
-  public values(): number[][][] {
+  public values(): PossibleLayout[] {
     return this.layouts;
   }
 }

@@ -1,7 +1,7 @@
 import { Board, Tetromino } from "@/game/objects";
 import { TetrominoType } from "@/game/constants";
 import { Vector2 } from "../engine";
-import { LayoutSet, TetrominoStack, placeOnBoard } from ".";
+import { LayoutSet, PossibleLayout, TetrominoStack, placeOnBoard } from ".";
 
 /**
  * The maximum number of possible board states to predict. This is to prevent
@@ -19,11 +19,15 @@ const PREDICTION_LIMIT = 100;
  * @returns A set of possible boards that could result from placing the tetromino
  */
 export const getPossibleBoards = (
-  layout: number[][],
+  layout: PossibleLayout,
   tetrominoType: TetrominoType
-): number[][][] => {
+): PossibleLayout[] => {
   // Create a board with this layout
-  const board = new Board(layout[0].length, layout.length, layout);
+  const board = new Board(
+    layout.board[0].length,
+    layout.board.length,
+    layout.board
+  );
 
   // A set of unique layouts (board states)
   const layouts = new LayoutSet();
@@ -51,7 +55,10 @@ export const getPossibleBoards = (
 
     if (tetromino.checkLockDown()) {
       // Place the tetromino on the board
-      layouts.add(placeOnBoard(tetromino, board));
+      layouts.add({
+        board: placeOnBoard(tetromino, board),
+        tetrominos: [...layout.tetrominos, tetromino],
+      });
     }
 
     // Move the tetromino down by 1 unit
@@ -95,8 +102,8 @@ export const getPossibleBoards = (
 export const getPossibleBoardsFromQueue = (
   layout: number[][],
   queue: TetrominoType[]
-): number[][][] => {
-  let layouts: number[][][] = [layout];
+): PossibleLayout[] => {
+  let layouts: PossibleLayout[] = [{ board: layout, tetrominos: [] }];
   for (const tetrominoType of queue) {
     const newLayouts = new LayoutSet();
     // Go through each layout and get all possible boards
