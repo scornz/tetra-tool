@@ -12,7 +12,6 @@ class PredictGame extends Game {
     next: NextQueue
   ) {
     super(engine, board, hold, next);
-    console.log("here!");
   }
 
   /**
@@ -24,7 +23,6 @@ class PredictGame extends Game {
     const next = this.next.getQueue();
 
     // Find the best move for the next piece
-
     const layout = findBestLayout(
       getPossibleBoardsFromQueue(this.board.getLayout(), [
         piece,
