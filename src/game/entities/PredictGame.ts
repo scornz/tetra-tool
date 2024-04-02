@@ -21,14 +21,9 @@ class PredictGame extends Game {
     const piece = super.spawnNext();
 
     const next = this.next.getQueue();
-
     // Find the best move for the next piece
     const layout = findBestLayout(
-      getPossibleBoardsFromQueue(this.board.getLayout(), [
-        piece,
-        next[0],
-        next[1],
-      ])
+      getPossibleBoardsFromQueue(this.board.getLayout(), [piece, ...next])
     );
     this.board.setBestMove(layout.tetrominos[0]);
 

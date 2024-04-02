@@ -1,8 +1,6 @@
-import { getCoords } from "@/utils";
-import { BOARD_COLORS, TESTING_LAYOUT, TetrominoType } from "@/game/constants";
-import { CanvasEntity, Engine, Vector2 } from "@/game/engine";
-import { Board, Tetromino } from "@/game/objects";
-import { BoardEntity, TetrominoEntity } from ".";
+import { Engine } from "@/game/engine";
+import { Tetromino } from "@/game/objects";
+import { BoardEntity } from ".";
 
 class PredictBoardEntity extends BoardEntity {
   /**

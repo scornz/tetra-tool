@@ -1,14 +1,20 @@
 import { Board, Tetromino } from "@/game/objects";
 import { TetrominoType } from "@/game/constants";
 import { Vector2 } from "../engine";
-import { LayoutSet, PossibleLayout, TetrominoStack, placeOnBoard } from ".";
+import {
+  LayoutSet,
+  PossibleLayout,
+  TetrominoStack,
+  placeOnBoard,
+  pruneLayouts,
+} from ".";
 
 /**
  * The maximum number of possible board states to predict. This is to prevent
  * infinite loops and to keep the prediction time reasonable. If the limit is
  * reached, a warning is logged to the console.
  */
-const PREDICTION_LIMIT = 100;
+const PREDICTION_LIMIT = 200;
 
 /**
  * Given a board state and a tetromino, get the set of all possible board states
@@ -112,7 +118,7 @@ export const getPossibleBoardsFromQueue = (
         newLayouts.add(layout);
       });
     }
-    layouts = newLayouts.values();
+    layouts = pruneLayouts(newLayouts.values(), PREDICTION_LIMIT);
   }
   return layouts;
 };

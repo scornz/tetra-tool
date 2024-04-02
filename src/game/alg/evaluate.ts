@@ -105,3 +105,31 @@ const getHeightOfColumn = (column: number[]): number => {
   }
   return 0;
 };
+
+/**
+ * A lot of layouts returned from the algorithm are horrible. This function prunes
+ * the layouts to only keep the top `limit` layouts based on the evaluation function.
+ * @param layouts The set of all layouts
+ * @param limit The number of layouts to keep
+ * @returns The top `limit` layouts based on the evaluation function `evaluateLayout`
+ */
+export const pruneLayouts = (
+  layouts: PossibleLayout[],
+  limit: number
+): PossibleLayout[] => {
+  const scored: { layout: PossibleLayout; score: number }[] = [];
+
+  // Just return layouts if limit is negative
+  if (limit < 0) return layouts;
+
+  // Evaluate all layouts
+  for (const layout of layouts) {
+    // Evaluate the layout
+    const score = evaluateLayout(layout.board);
+    scored.push({ layout, score });
+  }
+
+  // Sort by ascending score
+  scored.sort((a, b) => a.score - b.score);
+  return scored.slice(0, limit).map((scored) => scored.layout);
+};
