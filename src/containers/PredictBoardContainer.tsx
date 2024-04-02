@@ -4,7 +4,7 @@ import { useEngine } from "@/state/engine";
 import { HandleObject, useInstanceHandle } from "@/utils";
 import { BoardEntity, PredictBoardEntity } from "@/game/entities";
 
-const BoardContainer = (
+const PredictBoardContainer = (
   { ...props }: PropsOf<typeof Box>,
   ref: React.ForwardedRef<HandleObject<PredictBoardEntity | null>>
 ) => {
@@ -40,5 +40,5 @@ const BoardContainer = (
   );
 };
 
-const ForwardedBoardContainer = React.forwardRef(BoardContainer);
+const ForwardedBoardContainer = React.forwardRef(PredictBoardContainer);
 export default ForwardedBoardContainer;

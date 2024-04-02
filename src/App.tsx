@@ -1,11 +1,11 @@
 import "./App.css";
 import { EngineProvider } from "@/state/engine";
-import { GameContainer } from "@/containers";
+import { PredictGameContainer } from "@/containers";
 
 function App() {
   return (
     <EngineProvider>
-      <GameContainer />
+      <PredictGameContainer />
     </EngineProvider>
   );
 }

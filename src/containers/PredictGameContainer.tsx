@@ -7,7 +7,7 @@ import {
   useInstanceHandle,
   useNonnullInstanceRef,
 } from "@/utils";
-import { BoardContainer, HoldContainer, NextQueueContainer } from ".";
+import { PredictBoardContainer, HoldContainer, NextQueueContainer } from ".";
 import {
   BoardEntity,
   Game,
@@ -15,7 +15,7 @@ import {
   PredictGame,
 } from "@/game/entities";
 
-const GameContainer = (
+const PredictGameContainer = (
   { ...props }: PropsOf<typeof Box>,
   ref: React.ForwardedRef<HandleObject<PredictGame | null>>
 ) => {
@@ -35,7 +35,7 @@ const GameContainer = (
   return (
     <HStack {...props} alignItems="flex-start">
       <HoldContainer ref={holdRef} />
-      <BoardContainer
+      <PredictBoardContainer
         ref={boardRef}
         borderStyle="solid"
         borderColor="black"
@@ -46,5 +46,5 @@ const GameContainer = (
   );
 };
 
-const ForwardedGameContainer = React.forwardRef(GameContainer);
+const ForwardedGameContainer = React.forwardRef(PredictGameContainer);
 export default ForwardedGameContainer;
