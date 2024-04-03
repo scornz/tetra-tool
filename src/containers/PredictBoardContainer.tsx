@@ -18,7 +18,7 @@ const PredictBoardContainer = (
       // Access the canvas context and perform any drawing operations here
       const ctx = canvas.getContext("2d");
       if (ctx) {
-        const board = new PredictBoardEntity(engine, ctx, 10, 30, 20, false);
+        const board = new PredictBoardEntity(engine, ctx, 10, 30, 20, true);
         setBoard(board);
         // Example: Draw a red rectangle
         board.draw();
