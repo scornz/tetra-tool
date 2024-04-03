@@ -1,7 +1,9 @@
 import React, {
+  createRef,
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -34,6 +36,33 @@ export const useNonnullInstanceRef = <T>(): [
 };
 
 /**
+ * Use a ref to hold an array of `HandleObject<T>` refs.
+ * @returns A ref to the array of `HandleObject<T>` and a function to grab an instance by index.
+ */
+export const useNonnullInstanceRefsArray = <T>(
+  length: number
+): [React.RefObject<HandleObject<T>>[], (index: number) => T | undefined] => {
+  const refs = useTypedRefsArray<T>(length);
+  console.log(refs);
+
+  // Function to grab an instance from a specific ref by index.
+  const grabInstanceByIndex = useCallback(
+    (index: number): T | undefined => {
+      const ref = refs[index]?.current;
+      console.log("trying? ", index, refs);
+      if (ref) {
+        console.log("grabbing instance", ref.grab());
+      }
+
+      return ref ? ref.grab() : undefined;
+    },
+    [refs]
+  );
+
+  return [refs, grabInstanceByIndex];
+};
+
+/**
  * Uses a ref object to store an instance and provide it upwards to a parent
  * component. Exposes a matching state and setter function for use by the exposing
  * component.
@@ -59,4 +88,18 @@ export const useInstanceHandle = <T>(
   }, []);
 
   return [instance, set];
+};
+
+const useTypedRefsArray = <T>(
+  length: number
+): React.RefObject<HandleObject<T>>[] => {
+  const refs = useMemo(() => {
+    // Initialize an array of `length` with each element as a HandleObject<T> containing a ref.
+    return Array.from({ length }, () => {
+      const ref = React.createRef<HandleObject<T>>();
+      return ref;
+    });
+  }, [length]);
+
+  return refs;
 };

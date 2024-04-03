@@ -2,9 +2,19 @@ import { Engine, GameEntity, InputType } from "@/game/engine";
 import { BoardEntity, Game, PredictBoardEntity, TetrominoEntity } from ".";
 import { Board, Hold, NextQueue, Tetromino } from "@/game/objects";
 import { TetrominoType } from "../constants";
-import { findBestLayout, getPossibleBoardsFromQueue } from "@/game/alg";
+import {
+  PossibleLayout,
+  findBestLayout,
+  getPossibleBoardsFromQueue,
+} from "@/game/alg";
+import { TypedEvent } from "@/utils";
 
 class PredictGame extends Game {
+  /**
+   * Event that is emitted when a new layout is predicted.
+   */
+  public readonly predicted: TypedEvent<PossibleLayout> = new TypedEvent();
+
   constructor(
     engine: Engine,
     protected readonly board: PredictBoardEntity,
@@ -25,9 +35,18 @@ class PredictGame extends Game {
     const layout = findBestLayout(
       getPossibleBoardsFromQueue(this.board.getLayout(), [piece, ...next])
     );
+
     this.board.setBestMove(layout.tetrominos[0]);
 
+    // Emit the predicted layout
+    this.predicted.emit(layout);
     return piece;
+  }
+
+  destroy(): void {
+    super.destroy();
+    // Clear all listeners
+    this.predicted.clear();
   }
 }
 

@@ -184,10 +184,10 @@ class Tetromino {
   }
 
   /**
-   * Get a clone of this tetromino.
+   * Get a clone of this tetromino. If provided, clone it on to `board`.
    */
-  clone(): Tetromino {
-    return new Tetromino(this.board, this.type, this.pos, this.rot);
+  clone(board: Board = this.board): Tetromino {
+    return new Tetromino(board, this.type, this.pos, this.rot);
   }
 }
 

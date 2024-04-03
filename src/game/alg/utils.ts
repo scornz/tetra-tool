@@ -114,3 +114,34 @@ export const placeOnBoard = (
   clonedBoard.place(tetromino);
   return clonedBoard.getLayout();
 };
+
+export type PossibleLayoutMove = {
+  board: number[][];
+  tetromino: Tetromino;
+};
+
+/**
+ * Construct a series of boards based on the layout of the board after the moves.
+ * @param startingBoard The starting board prior to the moves specified in possibleLayout
+ * @param layout The layout of the board after the moves, with the tetrominos used to arrive at this layout
+ * @returns
+ */
+export const reconstructBoards = (
+  startingBoard: number[][],
+  layout: PossibleLayout
+): PossibleLayoutMove[] => {
+  const board = new Board(
+    startingBoard[0].length,
+    startingBoard.length,
+    startingBoard
+  );
+
+  const moves: PossibleLayoutMove[] = [];
+  layout.tetrominos.forEach((t) => {
+    moves.push({ board: board.getLayout(), tetromino: t });
+    const tetromino = new Tetromino(board, t.type, t.position, t.rotation);
+    board.place(tetromino);
+  });
+
+  return moves;
+};

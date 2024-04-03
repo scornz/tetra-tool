@@ -22,9 +22,12 @@ class Game extends GameEntity {
     super(engine);
     this.handleInputCallback = this.handleInput.bind(this);
     this.engine.input.addListener(this.handleInputCallback);
+  }
 
-    // Start the game
-    // NOTE: This should be removed for another start method of some sort
+  /**
+   * Start the game
+   */
+  start(): void {
     this.spawnNext();
   }
 
