@@ -44,7 +44,9 @@ class PredictMoveEntity extends CanvasEntity {
       }
     }
 
-    this.drawTetromino(this.move.tetromino);
+    if (this.move.tetromino) {
+      this.drawTetromino(this.move.tetromino);
+    }
   }
 
   /**

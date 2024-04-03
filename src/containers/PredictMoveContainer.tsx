@@ -3,9 +3,12 @@ import React, { useRef, useEffect } from "react";
 import { useEngine } from "@/state/engine";
 import { HandleObject, useInstanceHandle } from "@/utils";
 import { PredictMoveEntity } from "@/game/entities";
+import { Canvas } from "@/components";
+
+type Props = PropsOf<typeof Canvas> & PropsOf<typeof Box>;
 
 const PredictMoveContainer = (
-  { ...props }: PropsOf<typeof Box>,
+  { height = 100, width = 50, ...props }: Props,
   ref: React.ForwardedRef<HandleObject<PredictMoveEntity | null>>
 ) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -27,14 +30,14 @@ const PredictMoveContainer = (
   }, [engine, setMove]);
 
   return (
-    <Box {...props}>
-      <canvas
-        ref={canvasRef}
-        style={{ display: "block" }}
-        width={50}
-        height={100}
-      />
-    </Box>
+    <Canvas
+      ref={canvasRef}
+      style={{ display: "block" }}
+      width={width}
+      height={height}
+      border="3px solid"
+      {...props}
+    />
   );
 };
 

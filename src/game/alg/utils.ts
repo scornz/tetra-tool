@@ -117,7 +117,7 @@ export const placeOnBoard = (
 
 export type PossibleLayoutMove = {
   board: number[][];
-  tetromino: Tetromino;
+  tetromino: Tetromino | null;
 };
 
 /**
