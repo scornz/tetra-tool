@@ -37,6 +37,7 @@ const PredictGameContainer = (
   const [holdRef, hold] = useNonnullInstanceRef<Hold>();
   const [nextRef, next] = useNonnullInstanceRef<NextQueue>();
   const [game, setGame] = useInstanceHandle(ref);
+  const [active, setActive] = useState(false);
 
   const [predictedLayout, setPredictedLayout] = useState<PossibleLayout | null>(
     null
@@ -68,7 +69,15 @@ const PredictGameContainer = (
         <NextQueueContainer ref={nextRef} />
         <PredictMovesContainer board={board} layout={predictedLayout} />
       </HStack>
-      <Button onClick={() => game?.start()}>Hi</Button>
+      <Button
+        isDisabled={active}
+        onClick={() => {
+          game?.start();
+          setActive(true);
+        }}
+      >
+        Start Game
+      </Button>
     </Stack>
   );
 };

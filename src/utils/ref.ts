@@ -43,17 +43,11 @@ export const useNonnullInstanceRefsArray = <T>(
   length: number
 ): [React.RefObject<HandleObject<T>>[], (index: number) => T | undefined] => {
   const refs = useTypedRefsArray<T>(length);
-  console.log(refs);
 
   // Function to grab an instance from a specific ref by index.
   const grabInstanceByIndex = useCallback(
     (index: number): T | undefined => {
       const ref = refs[index]?.current;
-      console.log("trying? ", index, refs);
-      if (ref) {
-        console.log("grabbing instance", ref.grab());
-      }
-
       return ref ? ref.grab() : undefined;
     },
     [refs]
