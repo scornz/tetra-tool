@@ -36,5 +36,6 @@
     "typescript": "^5.2.2",
     "vite": "^5.0.8",
     "vite-tsconfig-paths": "^4.2.2"
-  }
+  },
+  "packageManager": "yarn@4.1.1"
 }
