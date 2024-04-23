@@ -1,5 +1,19 @@
 import { PossibleLayout } from ".";
 
+export type EvaluationCoefficients = {
+  flatness: number;
+  holes: number;
+  maxHeight: number;
+  overallHeight: number;
+};
+
+export const EVALUATION_COEFFICIENTS = {
+  flatness: 0.5,
+  holes: 2,
+  maxHeight: 8.25,
+  overallHeight: 0.24,
+};
+
 /**
  * Given a set of Tetris layouts, this function will evaluate each layout and return the best one.
  * This includes evaluating the height of the layout, the number of holes,
@@ -7,13 +21,16 @@ import { PossibleLayout } from ".";
  * @param layouts The set of Tetris layouts to evaluate
  * @returns
  */
-export const findBestLayout = (layouts: PossibleLayout[]): PossibleLayout => {
+export const findBestLayout = (
+  layouts: PossibleLayout[],
+  coeffs: EvaluationCoefficients = EVALUATION_COEFFICIENTS
+): PossibleLayout => {
   let bestLayout = layouts[0];
-  let bestScore = evaluateLayout(bestLayout.board);
+  let bestScore = evaluateLayout(bestLayout.board, coeffs);
 
   for (let i = 1; i < layouts.length; i++) {
     const layout = layouts[i];
-    const score = evaluateLayout(layout.board);
+    const score = evaluateLayout(layout.board, coeffs);
 
     if (score < bestScore) {
       bestLayout = layout;
@@ -29,17 +46,26 @@ export const findBestLayout = (layouts: PossibleLayout[]): PossibleLayout => {
  * @param layout The Tetris layout to evaluate
  * @returns
  */
-const evaluateLayout = (layout: number[][]): number => {
+export const evaluateLayout = (
+  layout: number[][],
+  coeffs: EvaluationCoefficients = EVALUATION_COEFFICIENTS
+): number => {
   // const flatness = evaluateFlatness(layout);
   // const holes = evaluateHoles(layout);
 
   /* Find the column with the maximum height, return that maximum height */
   // Lower maximum height is better
   const maxHeight = evaluateHeight(layout);
+  const overallHeight = evaluateOverallHeight(layout);
   const flatness = evaluateFlatness(layout);
   const holes = evaluateHoles(layout);
 
-  return holes + flatness + 3 * maxHeight;
+  return (
+    coeffs.holes * holes +
+    coeffs.flatness * flatness +
+    coeffs.maxHeight * maxHeight +
+    coeffs.overallHeight * overallHeight
+  );
 };
 
 /**
@@ -54,7 +80,9 @@ const evaluateFlatness = (layout: number[][]): number => {
   for (let i = 0; i < layout[0].length - 1; i++) {
     const column1 = layout.map((row) => row[i]);
     const column2 = layout.map((row) => row[i + 1]);
-    const diff = getHeightOfColumn(column1) - getHeightOfColumn(column2);
+    const diff = Math.abs(
+      getHeightOfColumn(column1) - getHeightOfColumn(column2)
+    );
     flatness += diff;
   }
 
@@ -77,7 +105,7 @@ const evaluateHoles = (layout: number[][]): number => {
 };
 
 /* Find the column with the maximum height, return that maximum height */
-const evaluateHeight = (layout: number[][]): number => {
+export const evaluateHeight = (layout: number[][]): number => {
   let maxHeight = 0;
   for (let col = 0; col < layout[0].length; col++) {
     const column = layout.map((row) => row[col]);
@@ -93,6 +121,15 @@ const evaluateHeight = (layout: number[][]): number => {
   }
 
   return maxHeight;
+};
+
+const evaluateOverallHeight = (layout: number[][]): number => {
+  let height = 0;
+  for (let col = 0; col < layout[0].length; col++) {
+    const column = layout.map((row) => row[col]);
+    height += getHeightOfColumn(column);
+  }
+  return height;
 };
 
 /**
@@ -115,7 +152,8 @@ const getHeightOfColumn = (column: number[]): number => {
  */
 export const pruneLayouts = (
   layouts: PossibleLayout[],
-  limit: number
+  limit: number,
+  coeffs: EvaluationCoefficients = EVALUATION_COEFFICIENTS
 ): PossibleLayout[] => {
   const scored: { layout: PossibleLayout; score: number }[] = [];
 
@@ -125,7 +163,7 @@ export const pruneLayouts = (
   // Evaluate all layouts
   for (const layout of layouts) {
     // Evaluate the layout
-    const score = evaluateLayout(layout.board);
+    const score = evaluateLayout(layout.board, coeffs);
     scored.push({ layout, score });
   }
 
