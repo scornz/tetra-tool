@@ -2,6 +2,8 @@ import { Board, Tetromino } from "@/game/objects";
 import { TetrominoType } from "@/game/constants";
 import { Vector2 } from "../engine";
 import {
+  EVALUATION_COEFFICIENTS,
+  EvaluationCoefficients,
   LayoutSet,
   PossibleLayout,
   TetrominoStack,
@@ -14,7 +16,7 @@ import {
  * infinite loops and to keep the prediction time reasonable. If the limit is
  * reached, a warning is logged to the console.
  */
-const PREDICTION_LIMIT = 200;
+const PREDICTION_LIMIT = 64;
 
 /**
  * Given a board state and a tetromino, get the set of all possible board states
@@ -26,7 +28,8 @@ const PREDICTION_LIMIT = 200;
  */
 export const getPossibleBoards = (
   layout: PossibleLayout,
-  tetrominoType: TetrominoType
+  tetrominoType: TetrominoType,
+  limit: number = PREDICTION_LIMIT
 ): PossibleLayout[] => {
   // Create a board with this layout
   const board = new Board(
@@ -55,7 +58,7 @@ export const getPossibleBoards = (
   }
 
   // Keep going until the stack is empty, meaning all possibilities are explored
-  while (stack.size() !== 0 && layouts.size() < PREDICTION_LIMIT) {
+  while (stack.size() !== 0 && layouts.size() < limit) {
     const tetromino = stack.pop()!.clone();
     // if (tetromino.checkCollision()) continue;
 
@@ -88,9 +91,9 @@ export const getPossibleBoards = (
     });
   }
 
-  if (layouts.size() >= PREDICTION_LIMIT) {
+  if (layouts.size() >= limit) {
     console.warn(
-      `Prediction limit reached (${PREDICTION_LIMIT}). Some possibilities may be missed.`
+      `Prediction limit reached (${limit}). Some possibilities may be missed.`
     );
   }
 
@@ -107,18 +110,20 @@ export const getPossibleBoards = (
  */
 export const getPossibleBoardsFromQueue = (
   layout: number[][],
-  queue: TetrominoType[]
+  queue: TetrominoType[],
+  limit: number = PREDICTION_LIMIT,
+  coeffs: EvaluationCoefficients = EVALUATION_COEFFICIENTS
 ): PossibleLayout[] => {
   let layouts: PossibleLayout[] = [{ board: layout, tetrominos: [] }];
   for (const tetrominoType of queue) {
     const newLayouts = new LayoutSet();
     // Go through each layout and get all possible boards
     for (const layout of layouts) {
-      getPossibleBoards(layout, tetrominoType).forEach((layout) => {
+      getPossibleBoards(layout, tetrominoType, limit).forEach((layout) => {
         newLayouts.add(layout);
       });
     }
-    layouts = pruneLayouts(newLayouts.values(), PREDICTION_LIMIT);
+    layouts = pruneLayouts(newLayouts.values(), limit, coeffs);
   }
   return layouts;
 };
