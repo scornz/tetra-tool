@@ -36,6 +36,7 @@ const PredictMoveContainer = (
       width={width}
       height={height}
       border="3px solid"
+      borderColor="black"
       {...props}
     />
   );

@@ -35,6 +35,15 @@ class PredictMoveEntity extends CanvasEntity {
 
     if (!this.move) return;
 
+    const cellSize = this.ctx.canvas.width / this.width;
+    // Draw grid
+    this.ctx.strokeStyle = "#ccc"; // Light grey color for grid lines
+    for (let y = 0; y < this.visibleHeight; y++) {
+      for (let x = 0; x < this.width; x++) {
+        this.ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
+      }
+    }
+
     for (let y = 0; y < this.visibleHeight; y++) {
       for (let x = 0; x < this.width; x++) {
         const cell = this.move.board[y][x];

@@ -47,6 +47,19 @@ class BoardEntity extends CanvasEntity {
   draw() {
     // Clear board prior to every draw
     this.clear();
+
+    // Draw grid
+    // Calculate cell size based on the canvas dimensions and board width
+    const cellSize = this.ctx.canvas.width / this.width;
+
+    // Draw grid
+    this.ctx.strokeStyle = "#aaaaaa"; // Light grey color for grid lines
+    for (let y = 0; y < this.visibleHeight; y++) {
+      for (let x = 0; x < this.width; x++) {
+        this.ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
+      }
+    }
+
     for (let y = 0; y < this.visibleHeight; y++) {
       for (let x = 0; x < this.width; x++) {
         const cell = this.board.getCell(x, y);
@@ -96,7 +109,8 @@ class BoardEntity extends CanvasEntity {
     x: number,
     y: number,
     type: TetrominoType,
-    transparency: string = "FF"
+    transparency: string = "FF",
+    includeX: boolean = false
   ) => {
     const cellSize = this.ctx.canvas.width / this.width;
     const coords = getCoords(this.ctx.canvas, x * cellSize, y * cellSize);
@@ -106,6 +120,12 @@ class BoardEntity extends CanvasEntity {
 
     // Draw with negative cell y-size because the y-axis is inverted
     this.ctx.fillRect(coords.x, coords.y, cellSize, -cellSize);
+
+    if (includeX) {
+      // Put a dot in the center of the cell
+      this.ctx.fillStyle = "#000000";
+      this.ctx.fillRect(coords.x + cellSize / 2, coords.y - cellSize / 2, 4, 4);
+    }
   };
 
   /**

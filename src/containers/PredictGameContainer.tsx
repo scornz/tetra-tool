@@ -70,6 +70,7 @@ const PredictGameContainer = (
         <PredictMovesContainer board={board} layout={predictedLayout} />
       </HStack>
       <Button
+        mt={128}
         isDisabled={active}
         onClick={() => {
           game?.start();

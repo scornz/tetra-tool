@@ -44,7 +44,7 @@ class PredictBoardEntity extends BoardEntity {
   private drawBestMove = (tetromino: Tetromino) => {
     const ghostPositions = tetromino.getGhostPositions();
     ghostPositions.forEach((pos) => {
-      this.drawCell(pos.x, pos.y, tetromino.type, "3d");
+      this.drawCell(pos.x, pos.y, tetromino.type, "3d", true);
     });
   };
 }
